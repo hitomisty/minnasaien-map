@@ -92,7 +92,7 @@
 
   .path-line {
     stroke: var(--color-path);
-    stroke-width: 60;
+    stroke-width: 50;
     stroke-linecap: round;
     fill: none;
   }
@@ -180,7 +180,7 @@
 <body>
 
 <div class="map-wrap">
-  <svg id="map" viewBox="0 0 380 1300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="みんなの菜園の配置図"></svg>
+  <svg id="map" viewBox="0 0 520 1300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="みんなの菜園の配置図"></svg>
 </div>
 
 <div class="title-block">
@@ -218,7 +218,7 @@
     const top = Math.min(...ys) - 90;
     const bottom = Math.max(...ys) + 40;
     svg.appendChild(el("line", {
-      class: "path-line", x1: 190, y1: top, x2: 190, y2: bottom
+      class: "path-line", x1: 418, y1: top, x2: 418, y2: bottom
     }));
   }
 
@@ -311,7 +311,7 @@
     const items = data.elements;
 
     const maxY = Math.max(...items.map(i => i.type === "container" ? i.y + i.h : (i.y + (i.r || 30))));
-    svg.setAttribute("viewBox", `0 0 380 ${maxY + 40}`);
+    svg.setAttribute("viewBox", `0 0 520 ${maxY + 40}`);
 
     drawPath(svg, items);
 
