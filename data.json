@@ -1,0 +1,67 @@
+{
+  "background": null,
+  "lastUpdated": "2026-07-19",
+  "elements": [
+    { "id": "A", "type": "container", "shape": "rect", "x": 115, "y": 40, "w": 70, "h": 48,
+      "plants": ["オレガノ", "ネギ", "ぶどう", "ホーリーバジル"], "note": "" },
+    { "id": "B", "type": "container", "shape": "rect", "x": 205, "y": 40, "w": 70, "h": 48,
+      "plants": ["ネギ", "ミント", "レモンバーベナ"], "note": "" },
+
+    { "id": "1", "type": "planter", "shape": "circle", "x": 25, "y": 64, "r": 22,
+      "plants": ["ミント"], "note": "" },
+    { "id": "2", "type": "planter", "shape": "circle", "x": 70, "y": 64, "r": 22,
+      "plants": ["レモングラス"], "note": "" },
+    { "id": "3", "type": "planter", "shape": "circle", "x": 255, "y": 130, "r": 22,
+      "plants": ["ホワイトセージ"], "note": "" },
+    { "id": "4", "type": "planter", "shape": "circle", "x": 290, "y": 95, "r": 22,
+      "plants": ["青しそ", "いちじく"], "note": "" },
+
+    { "id": "signboard", "type": "fixed", "icon": "signboard", "x": 290, "y": 135,
+      "label": "看板", "tappable": true,
+      "note": "活動の様子や、今育てている野菜のことをお知らせする看板です。新規メンバー募集のお知らせもここに貼り出します。" },
+
+    { "id": "C", "type": "container", "shape": "rect", "x": 55, "y": 170, "w": 70, "h": 48,
+      "plants": ["青しそ", "赤しそ", "枝豆", "きゅうり", "チャイブ", "ニラ"], "note": "" },
+    { "id": "D", "type": "container", "shape": "rect", "x": 55, "y": 245, "w": 70, "h": 48,
+      "plants": ["枝豆", "春菊", "とうがらし", "なす", "ニラ"], "note": "" },
+    { "id": "E", "type": "container", "shape": "rect", "x": 55, "y": 320, "w": 70, "h": 48,
+      "plants": ["とうもろこし", "ピーマン", "落花生"], "note": "" },
+    { "id": "5", "type": "planter", "shape": "circle", "x": 90, "y": 410, "r": 22,
+      "plants": ["レモングラス"], "note": "" },
+    { "id": "F", "type": "container", "shape": "rect", "x": 55, "y": 470, "w": 70, "h": 48,
+      "plants": ["ゴーヤ", "ネギ", "モロヘイヤ"], "note": "" },
+
+    { "id": "compost1", "type": "fixed", "icon": "compost", "x": 90, "y": 563,
+      "label": "コンポストBOX", "tappable": true,
+      "note": "メンバーの自宅から出た生ごみを、家庭用のコンポストバッグ「LFCコンポスト」で堆肥（栄養たっぷりの土）にして、この中で保管して肥料の代わりに使っています。" },
+    { "id": "toolbox", "type": "fixed", "icon": "toolbox", "x": 90, "y": 638,
+      "label": "用具BOX", "tappable": true,
+      "note": "じょうろやホースなどの用具を保管しているBOX。" },
+    { "id": "tree", "type": "fixed", "icon": "tree", "x": 90, "y": 713,
+      "label": "木", "tappable": false, "note": "" },
+
+    { "id": "G", "type": "container", "shape": "rect", "x": 55, "y": 770, "w": 70, "h": 48,
+      "plants": ["青しそ", "サニーレタス", "ニラ", "ブルーベリー"], "note": "" },
+    { "id": "H", "type": "container", "shape": "rect", "x": 55, "y": 845, "w": 70, "h": 48,
+      "plants": ["青しそ", "空心菜", "すいか"], "note": "" },
+
+    { "id": "compost2", "type": "fixed", "icon": "compost", "x": 300, "y": 906,
+      "label": "コンポストBOX", "tappable": true,
+      "note": "みんなの菜園で育てた植物が枯れた後の葉っぱや茎などを入れて、ここで堆肥（栄養たっぷりの土）にしています。" },
+
+    { "id": "I", "type": "container", "shape": "rect", "x": 55, "y": 920, "w": 70, "h": 48,
+      "plants": ["ネギ", "バジル", "ミニトマト"], "note": "" },
+    { "id": "J", "type": "container", "shape": "rect", "x": 55, "y": 995, "w": 70, "h": 48,
+      "plants": ["オクラ", "ししとう", "ピーマン"], "note": "" },
+    { "id": "K", "type": "container", "shape": "rect", "x": 55, "y": 1070, "w": 70, "h": 48,
+      "plants": [], "note": "" },
+
+    { "id": "bench", "type": "fixed", "icon": "bench", "x": 25, "y": 1132,
+      "label": "ベンチ", "tappable": false, "note": "" },
+
+    { "id": "L", "type": "container", "shape": "rect", "x": 55, "y": 1145, "w": 70, "h": 48,
+      "plants": [], "note": "" },
+    { "id": "M", "type": "container", "shape": "rect", "x": 55, "y": 1220, "w": 70, "h": 48,
+      "plants": ["さつまいも"], "note": "" }
+  ]
+}

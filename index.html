@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>みんなの菜園 配置図</title>
+<style>
+  :root {
+    --color-bg: #faf6ec;
+    --color-container: #b98a5e;
+    --color-container-stroke: #8a6239;
+    --color-planter: #4a4a48;
+    --color-planter-stroke: #2f2f2d;
+    --color-path: #ecdfc8;
+    --color-green: #6f9163;
+    --color-green-dark: #55704b;
+    --color-text: #4a3f35;
+    --color-card-bg: #fffdf8;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  header {
+    padding: 20px 16px 8px;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 18px;
+    margin: 0 0 4px;
+    font-weight: 600;
+  }
+
+  header p {
+    font-size: 12px;
+    margin: 0;
+    color: #8a7b68;
+  }
+
+  .map-wrap {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 8px 0 0;
+  }
+
+  svg#map {
+    width: 100%;
+    height: auto;
+    display: block;
+    touch-action: pan-y;
+  }
+
+  .tappable { cursor: pointer; }
+
+  .container-shape {
+    fill: var(--color-container);
+    stroke: var(--color-container-stroke);
+    stroke-width: 2;
+  }
+
+  .planter-shape {
+    fill: var(--color-planter);
+    stroke: var(--color-planter-stroke);
+    stroke-width: 2;
+  }
+
+  .id-label {
+    fill: #fff8ec;
+    font-size: 15px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+  }
+
+  .path-line {
+    stroke: var(--color-path);
+    stroke-width: 14;
+    stroke-linecap: round;
+    fill: none;
+  }
+
+  .icon-label {
+    fill: var(--color-text);
+    font-size: 10px;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #9a8c78;
+    padding: 24px 16px 32px;
+    line-height: 1.7;
+  }
+
+  /* bottom sheet */
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(60, 50, 40, 0.35);
+    display: none;
+    z-index: 10;
+  }
+
+  #overlay.open { display: block; }
+
+  #sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-card-bg);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 28px;
+    max-width: 480px;
+    margin: 0 auto;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    z-index: 11;
+  }
+
+  #overlay.open #sheet {
+    transform: translateY(0);
+  }
+
+  #sheet h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: var(--color-green-dark);
+  }
+
+  #sheet .plants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  #sheet .plant-chip {
+    background: #eef3ea;
+    color: var(--color-green-dark);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 13px;
+  }
+
+  #sheet .note {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-text);
+    white-space: pre-wrap;
+  }
+
+  #sheet .close-btn {
+    display: block;
+    margin: 18px auto 0;
+    background: var(--color-green);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 28px;
+    font-size: 14px;
+    min-height: 44px;
+    min-width: 44px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>みんなの菜園 配置図</h1>
+  <p>気になる場所をタップしてね</p>
+</header>
+
+<div class="map-wrap">
+  <svg id="map" viewBox="0 0 360 1300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="みんなの菜園の配置図"></svg>
+</div>
+
+<footer id="footer"></footer>
+
+<div id="overlay">
+  <div id="sheet" role="dialog" aria-modal="true">
+    <h2 id="sheet-title"></h2>
+    <div class="plants" id="sheet-plants"></div>
+    <div class="note" id="sheet-note"></div>
+    <button class="close-btn" id="sheet-close">閉じる</button>
+  </div>
+</div>
+
+<script>
+  const SVG_NS = "http://www.w3.org/2000/svg";
+
+  // データ取得部分（将来スプレッドシート公開CSVに差し替え予定）
+  async function fetchGardenData() {
+    const res = await fetch("data.json");
+    return res.json();
+  }
+
+  function el(tag, attrs) {
+    const node = document.createElementNS(SVG_NS, tag);
+    for (const k in attrs) node.setAttribute(k, attrs[k]);
+    return node;
+  }
+
+  function drawPath(svg, items) {
+    const ys = items.map(i => i.type === "container" ? i.y + i.h / 2 : i.y);
+    const top = Math.min(...ys) - 90;
+    const bottom = Math.max(...ys) + 40;
+    svg.appendChild(el("line", {
+      class: "path-line", x1: 200, y1: top, x2: 200, y2: bottom
+    }));
+  }
+
+  function drawIcon(svg, item) {
+    const g = el("g", { transform: `translate(${item.x},${item.y})` });
+    if (item.tappable) g.classList.add("tappable");
+
+    switch (item.icon) {
+      case "signboard":
+        g.appendChild(el("line", { x1: 0, y1: -6, x2: 0, y2: 16, stroke: "#8a6239", "stroke-width": 3 }));
+        g.appendChild(el("rect", { x: -16, y: -22, width: 32, height: 20, rx: 4, fill: "#fffaf0", stroke: "#8a6239", "stroke-width": 2 }));
+        g.appendChild(el("line", { x1: -10, y1: -14, x2: 10, y2: -14, stroke: "#b98a5e", "stroke-width": 2 }));
+        g.appendChild(el("line", { x1: -10, y1: -8, x2: 6, y2: -8, stroke: "#b98a5e", "stroke-width": 2 }));
+        break;
+      case "compost":
+        g.appendChild(el("rect", { x: -18, y: -18, width: 36, height: 36, rx: 8, fill: "#7a5a3a", stroke: "#5a3f26", "stroke-width": 2 }));
+        g.appendChild(el("circle", { cx: -5, cy: -2, r: 5, fill: "#8fae7c" }));
+        g.appendChild(el("circle", { cx: 6, cy: 6, r: 4, fill: "#8fae7c" }));
+        break;
+      case "toolbox":
+        g.appendChild(el("path", { d: "M -10 -18 Q 0 -30 10 -18", fill: "none", stroke: "#5a3f26", "stroke-width": 3 }));
+        g.appendChild(el("rect", { x: -18, y: -16, width: 36, height: 26, rx: 6, fill: "#b98a5e", stroke: "#5a3f26", "stroke-width": 2 }));
+        g.appendChild(el("line", { x1: -18, y1: -3, x2: 18, y2: -3, stroke: "#5a3f26", "stroke-width": 2 }));
+        break;
+      case "tree":
+        g.appendChild(el("rect", { x: -4, y: 2, width: 8, height: 16, rx: 2, fill: "#8a6239" }));
+        g.appendChild(el("circle", { cx: 0, cy: -10, r: 18, fill: "#6f9163" }));
+        break;
+      case "bench":
+        g.appendChild(el("path", {
+          d: "M -14 -18 A 18 18 0 0 0 -14 18",
+          fill: "none", stroke: "#8a6239", "stroke-width": 5, "stroke-linecap": "round"
+        }));
+        break;
+    }
+
+    svg.appendChild(g);
+
+    const label = el("text", { class: "icon-label", x: item.x, y: item.y + 30 });
+    label.textContent = item.label;
+    svg.appendChild(label);
+
+    return g;
+  }
+
+  function drawContainer(svg, item) {
+    const g = el("g", { class: "tappable" });
+    const cx = item.x + item.w / 2;
+    const cy = item.y + item.h / 2;
+    g.appendChild(el("rect", {
+      class: "container-shape",
+      x: item.x, y: item.y, width: item.w, height: item.h, rx: 10
+    }));
+    const label = el("text", { class: "id-label", x: cx, y: cy });
+    label.textContent = item.id;
+    g.appendChild(label);
+    svg.appendChild(g);
+    return g;
+  }
+
+  function drawPlanter(svg, item) {
+    const g = el("g", { class: "tappable" });
+    g.appendChild(el("circle", {
+      class: "planter-shape", cx: item.x, cy: item.y, r: item.r
+    }));
+    const label = el("text", { class: "id-label", x: item.x, y: item.y });
+    label.textContent = item.id;
+    g.appendChild(label);
+    svg.appendChild(g);
+    return g;
+  }
+
+  function openSheet(item) {
+    document.getElementById("sheet-title").textContent = item.label || item.id;
+    const plantsWrap = document.getElementById("sheet-plants");
+    plantsWrap.innerHTML = "";
+    (item.plants || []).forEach(p => {
+      const chip = document.createElement("span");
+      chip.className = "plant-chip";
+      chip.textContent = p;
+      plantsWrap.appendChild(chip);
+    });
+    plantsWrap.style.display = (item.plants && item.plants.length) ? "flex" : "none";
+    document.getElementById("sheet-note").textContent = item.note || "";
+    document.getElementById("overlay").classList.add("open");
+  }
+
+  function closeSheet() {
+    document.getElementById("overlay").classList.remove("open");
+  }
+
+  document.getElementById("overlay").addEventListener("click", (e) => {
+    if (e.target.id === "overlay") closeSheet();
+  });
+  document.getElementById("sheet-close").addEventListener("click", closeSheet);
+
+  async function init() {
+    const data = await fetchGardenData();
+    const svg = document.getElementById("map");
+    const items = data.elements;
+
+    const maxY = Math.max(...items.map(i => i.type === "container" ? i.y + i.h : (i.y + (i.r || 30))));
+    svg.setAttribute("viewBox", `0 0 360 ${maxY + 40}`);
+
+    drawPath(svg, items);
+
+    items.forEach(item => {
+      let node;
+      if (item.type === "container") node = drawContainer(svg, item);
+      else if (item.type === "planter") node = drawPlanter(svg, item);
+      else if (item.type === "fixed") node = drawIcon(svg, item);
+
+      if (item.type !== "fixed" || item.tappable) {
+        node.addEventListener("click", () => openSheet(item));
+      }
+    });
+
+    document.getElementById("footer").textContent =
+      `カメラや位置情報は使用していません。最終更新日: ${data.lastUpdated}`;
+  }
+
+  init();
+</script>
+
+</body>
+</html>
