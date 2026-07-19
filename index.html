@@ -30,21 +30,27 @@
     width: 100%;
   }
 
-  header {
-    padding: 20px 16px 8px;
+  .title-block {
+    padding: 8px 16px 40px;
     text-align: center;
   }
 
-  header h1 {
+  .title-block h1 {
     font-size: 18px;
     margin: 0 0 4px;
     font-weight: 600;
   }
 
-  header p {
+  .title-block .sub {
     font-size: 12px;
     margin: 0;
     color: #8a7b68;
+  }
+
+  .title-block .date {
+    font-size: 11px;
+    margin: 8px 0 0;
+    color: #9a8c78;
   }
 
   .map-wrap {
@@ -86,7 +92,7 @@
 
   .path-line {
     stroke: var(--color-path);
-    stroke-width: 14;
+    stroke-width: 60;
     stroke-linecap: round;
     fill: none;
   }
@@ -96,14 +102,6 @@
     font-size: 10px;
     text-anchor: middle;
     pointer-events: none;
-  }
-
-  footer {
-    text-align: center;
-    font-size: 11px;
-    color: #9a8c78;
-    padding: 24px 16px 32px;
-    line-height: 1.7;
   }
 
   /* bottom sheet */
@@ -181,16 +179,15 @@
 </head>
 <body>
 
-<header>
-  <h1>みんなの菜園 配置図</h1>
-  <p>気になる場所をタップしてね</p>
-</header>
-
 <div class="map-wrap">
-  <svg id="map" viewBox="0 0 360 1300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="みんなの菜園の配置図"></svg>
+  <svg id="map" viewBox="0 0 380 1300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="みんなの菜園の配置図"></svg>
 </div>
 
-<footer id="footer"></footer>
+<div class="title-block">
+  <h1>みんなの菜園 配置図</h1>
+  <p class="sub">気になる場所をタップしてね</p>
+  <p class="date" id="dateLabel"></p>
+</div>
 
 <div id="overlay">
   <div id="sheet" role="dialog" aria-modal="true">
@@ -221,7 +218,7 @@
     const top = Math.min(...ys) - 90;
     const bottom = Math.max(...ys) + 40;
     svg.appendChild(el("line", {
-      class: "path-line", x1: 200, y1: top, x2: 200, y2: bottom
+      class: "path-line", x1: 190, y1: top, x2: 190, y2: bottom
     }));
   }
 
@@ -245,16 +242,6 @@
         g.appendChild(el("path", { d: "M -10 -18 Q 0 -30 10 -18", fill: "none", stroke: "#5a3f26", "stroke-width": 3 }));
         g.appendChild(el("rect", { x: -18, y: -16, width: 36, height: 26, rx: 6, fill: "#b98a5e", stroke: "#5a3f26", "stroke-width": 2 }));
         g.appendChild(el("line", { x1: -18, y1: -3, x2: 18, y2: -3, stroke: "#5a3f26", "stroke-width": 2 }));
-        break;
-      case "tree":
-        g.appendChild(el("rect", { x: -4, y: 2, width: 8, height: 16, rx: 2, fill: "#8a6239" }));
-        g.appendChild(el("circle", { cx: 0, cy: -10, r: 18, fill: "#6f9163" }));
-        break;
-      case "bench":
-        g.appendChild(el("path", {
-          d: "M -14 -18 A 18 18 0 0 0 -14 18",
-          fill: "none", stroke: "#8a6239", "stroke-width": 5, "stroke-linecap": "round"
-        }));
         break;
     }
 
@@ -324,7 +311,7 @@
     const items = data.elements;
 
     const maxY = Math.max(...items.map(i => i.type === "container" ? i.y + i.h : (i.y + (i.r || 30))));
-    svg.setAttribute("viewBox", `0 0 360 ${maxY + 40}`);
+    svg.setAttribute("viewBox", `0 0 380 ${maxY + 40}`);
 
     drawPath(svg, items);
 
@@ -339,8 +326,8 @@
       }
     });
 
-    document.getElementById("footer").textContent =
-      `カメラや位置情報は使用していません。最終更新日: ${data.lastUpdated}`;
+    const [y, m, d] = data.lastUpdated.split("-").map(Number);
+    document.getElementById("dateLabel").textContent = `${y}年${m}月${d}日現在`;
 
     // 開いた直後は入口エリア（画面最下部）が見えるようにスクロール
     requestAnimationFrame(() => {
