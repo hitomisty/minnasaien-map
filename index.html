@@ -108,12 +108,18 @@
   #overlay {
     position: fixed;
     inset: 0;
-    background: rgba(60, 50, 40, 0.35);
-    display: none;
+    background: rgba(50, 40, 30, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
     z-index: 10;
   }
 
-  #overlay.open { display: block; }
+  #overlay.open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.25s ease;
+  }
 
   #sheet {
     position: fixed;
@@ -152,8 +158,8 @@
     background: #eef3ea;
     color: var(--color-green-dark);
     border-radius: 999px;
-    padding: 4px 12px;
-    font-size: 13px;
+    padding: 5px 14px;
+    font-size: 16px;
   }
 
   #sheet .note {
@@ -282,7 +288,10 @@
   }
 
   function openSheet(item) {
-    document.getElementById("sheet-title").textContent = item.label || item.id;
+    let title = item.label || item.id;
+    if (item.type === "container") title = `コンテナ ${item.id}`;
+    else if (item.type === "planter") title = `プランター ${item.id}`;
+    document.getElementById("sheet-title").textContent = title;
     const plantsWrap = document.getElementById("sheet-plants");
     plantsWrap.innerHTML = "";
     (item.plants || []).forEach(p => {
