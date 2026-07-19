@@ -341,6 +341,13 @@
 
     document.getElementById("footer").textContent =
       `カメラや位置情報は使用していません。最終更新日: ${data.lastUpdated}`;
+
+    // 開いた直後は入口エリア（画面最下部）が見えるようにスクロール
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    });
   }
 
   init();
